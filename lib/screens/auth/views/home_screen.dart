@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'cart_screen.dart';
 import 'offers_screen.dart';
 import 'providers/cart_provider.dart';
+import 'account_page.dart';
+import 'checkout_screen.dart';     
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onSearchChanged() => setState(() {});
 
-   final List<Map<String, dynamic>> mostRequested = [
+  final List<Map<String, dynamic>> mostRequested = [
     {
       "id": "p1",
       "name": "Orange Juice",
@@ -220,10 +222,10 @@ class _HomeScreenState extends State<HomeScreen> {
       const OffersScreen(),
 
       // صفحة الحساب
-      const Center(child: Text("Account Page")),
+      const AccountPage(),
 
       // صفحة الدفع
-      const Center(child: Text("Checkout Page")),
+const CheckoutScreen(),
     ];
 
     return Scaffold(
@@ -314,7 +316,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: navIndex,
         selectedItemColor: blue,
@@ -342,7 +343,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Text(
                         "${cartProvider.items.length}",
-                        style: const TextStyle(color: Colors.white, fontSize: 9),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 9),
                       ),
                     ),
                   ),
@@ -409,7 +411,8 @@ class _ProductCard extends StatelessWidget {
             const SizedBox(height: 3),
             Text(
               "₪${product["price"]}",
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: blue),
+              style: const TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w800, color: blue),
             ),
           ],
         ),
