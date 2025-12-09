@@ -23,7 +23,7 @@ class OffersScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           _OfferCard(
-            image: "assets/images/offer.png",
+            image: "assets/images/offer.webp",
             badge: "50% OFF",
             title: "Summer Sale",
             description: "Save big on the summer collection!",
@@ -31,7 +31,7 @@ class OffersScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _OfferCard(
-            image: "assets/images/offer.png",
+            image: "assets/images/offer.webp",
             badge: "Buy 1 Get 1",
             title: "BOGO Offer",
             description: "Buy one item and get another free!",
@@ -39,7 +39,7 @@ class OffersScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _OfferCard(
-            image: "assets/images/offer.png",
+            image: "assets/images/offer.webp",
             badge: "Hot Deal",
             title: "Weekend Big Sale",
             description: "Special discounts this weekend only.",

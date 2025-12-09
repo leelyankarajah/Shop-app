@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class OrderSuccessPage extends StatelessWidget {
+class OrderSuccessPage extends StatefulWidget {
   final double total;
 
   const OrderSuccessPage({
@@ -12,9 +12,39 @@ class OrderSuccessPage extends StatelessWidget {
   static const Color background = Color(0xFFF5F5F7);
 
   @override
+  State<OrderSuccessPage> createState() => _OrderSuccessPageState();
+}
+
+class _OrderSuccessPageState extends State<OrderSuccessPage> {
+  final TextEditingController searchController = TextEditingController();
+
+  // قائمة وهمية للعرض
+  final List<String> orders = [
+    "Orange Juice",
+    "Whole Wheat Bread",
+    "Pasta",
+    "Cheddar Cheese",
+  ];
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  List<String> get filteredOrders {
+    final q = searchController.text.trim().toLowerCase();
+    if (q.isEmpty) return orders;
+    final filtered = orders
+        .where((order) => order.toLowerCase().contains(q))
+        .toList();
+    return filtered;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: OrderSuccessPage.background,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -22,7 +52,32 @@ class OrderSuccessPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // دائرة الأنيميشن اللطيفة
+                // ===== SearchBar إضافي =====
+                TextField(
+                  controller: searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: "Search orders...",
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // ===== رسالة No results found =====
+                if (filteredOrders.isEmpty)
+                  const Center(
+                    child: Text(
+                      "No results found",
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ),
+
+                // ===== الكود الأصلي بدون تغيير =====
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
                   duration: const Duration(milliseconds: 600),
@@ -42,7 +97,7 @@ class OrderSuccessPage extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.check_circle,
-                      color: primaryColor,
+                      color: OrderSuccessPage.primaryColor,
                       size: 70,
                     ),
                   ),
@@ -75,7 +130,6 @@ class OrderSuccessPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // بطاقة فيها تفاصيل سريعة
                 Container(
                   width: double.infinity,
                   padding:
@@ -113,18 +167,18 @@ class OrderSuccessPage extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            '₪${total.toStringAsFixed(2)}',
+                            '₪${widget.total.toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: primaryColor,
+                              color: OrderSuccessPage.primaryColor,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           Text(
                             'Order ID',
                             style: TextStyle(
@@ -144,8 +198,8 @@ class OrderSuccessPage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           Text(
                             'Estimated delivery',
                             style: TextStyle(
@@ -170,16 +224,14 @@ class OrderSuccessPage extends StatelessWidget {
 
                 const SizedBox(height: 28),
 
-                // الأزرار
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // الرجوع للهوم (نفرّغ الستاك)
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: OrderSuccessPage.primaryColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -200,8 +252,7 @@ class OrderSuccessPage extends StatelessWidget {
 
                 TextButton(
                   onPressed: () {
-                    // مستقبلاً: الانتقال لصفحة الطلبات
-                    Navigator.of(context).pop(); // حالياً بس رجوع
+                    Navigator.of(context).pop();
                   },
                   child: const Text(
                     'View Order Details (coming soon)',

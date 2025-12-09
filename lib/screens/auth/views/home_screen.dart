@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       // صفحة الكارت
-      const CartScreen(),
+       CartScreen(),
 
       // صفحة العروض
       const OffersScreen(),
