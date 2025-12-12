@@ -24,115 +24,139 @@ class ReviewCard extends StatelessWidget {
       numOfTwoStar,
       numOfOneStar;
 
+  int get totalWithBreakdown =>
+      numOfFiveStar +
+      numOfFourStar +
+      numOfThreeStar +
+      numOfTwoStar +
+      numOfOneStar;
+
+  double _ratio(int value) {
+    final total = totalWithBreakdown;
+    if (total == 0) return 0;
+    return value / total;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final displayRating =
+        rating.isNaN || rating.isInfinite ? 0.0 : rating.clamp(0.0, 5.0);
+
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
-      width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.035),
-        borderRadius:
-            const BorderRadius.all(Radius.circular(defaultBorderRadious)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    text: "$rating ",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall!
-                        .copyWith(fontWeight: FontWeight.w500),
-                    children: [
-                      TextSpan(
-                        text: "/5",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                Text("Based on $numOfReviews Reviews"),
-                const SizedBox(height: defaultPadding),
-                RatingBar.builder(
-                  initialRating: rating,
-                  itemSize: 20,
-                  itemPadding: const EdgeInsets.only(right: defaultPadding / 4),
-                  unratedColor: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .color!
-                      .withOpacity(0.08),
-                  glow: false,
-                  allowHalfRating: true,
-                  ignoreGestures: true,
-                  onRatingUpdate: (value) {},
-                  itemBuilder: (context, index) =>
-                      SvgPicture.asset("assets/icons/Star_filled.svg"),
-                ),
-              ],
-            ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(defaultBorderRadious * 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 10),
           ),
-          const SizedBox(width: defaultPadding),
-          Expanded(
-            child: Column(
-              children: [
-                RateBar(star: 5, value: numOfFiveStar / numOfReviews),
-                RateBar(star: 4, value: numOfFourStar / numOfReviews),
-                RateBar(star: 3, value: numOfThreeStar / numOfReviews),
-                RateBar(star: 2, value: numOfTwoStar / numOfReviews),
-                RateBar(star: 1, value: numOfOneStar / numOfReviews),
-              ],
-            ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Top summary
+          Row(
+            children: [
+              // Rating number + stars
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    displayRating.toStringAsFixed(1),
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  RatingBarIndicator(
+                    rating: displayRating,
+                    itemBuilder: (context, _) => SvgPicture.asset(
+                      "assets/icons/Star.svg",
+                      colorFilter: const ColorFilter.mode(
+                        warningColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    unratedColor: primaryMaterialColor.shade100,
+                    itemSize: 18.0,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "$numOfReviews reviews",
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: blackColor60,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(width: defaultPadding * 1.5),
+
+              // Bars
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildBarRow(context, 5, numOfFiveStar),
+                    _buildBarRow(context, 4, numOfFourStar),
+                    _buildBarRow(context, 3, numOfThreeStar),
+                    _buildBarRow(context, 2, numOfTwoStar),
+                    _buildBarRow(context, 1, numOfOneStar),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class RateBar extends StatelessWidget {
-  const RateBar({
-    super.key,
-    required this.star,
-    required this.value,
-  });
+  Widget _buildBarRow(BuildContext context, int star, int value) {
+    final theme = Theme.of(context);
+    final ratio = _ratio(value);
 
-  final int star;
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: star == 1 ? 0 : defaultPadding / 2),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          SizedBox(
-            width: 40,
-            child: Text(
-              "$star Star",
-              style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                  color: Theme.of(context).textTheme.bodyMedium!.color),
+          Text(
+            "$star",
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(width: 4),
+          SvgPicture.asset(
+            "assets/icons/Star.svg",
+            height: 12,
+            colorFilter: const ColorFilter.mode(
+              warningColor,
+              BlendMode.srcIn,
             ),
           ),
-          const SizedBox(width: defaultPadding / 2),
+          const SizedBox(width: 8),
           Expanded(
             child: ClipRRect(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(defaultBorderRadious),
-              ),
+              borderRadius: BorderRadius.circular(999),
               child: LinearProgressIndicator(
                 minHeight: 6,
-                color: warningColor,
-                backgroundColor: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .color!
-                    .withOpacity(0.05),
-                value: value,
+                value: ratio,
+                backgroundColor:
+                    theme.textTheme.bodyLarge?.color?.withOpacity(0.05),
+                valueColor: const AlwaysStoppedAnimation<Color>(primaryColor),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 26,
+            child: Text(
+              "$value",
+              textAlign: TextAlign.right,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: blackColor60,
               ),
             ),
           ),

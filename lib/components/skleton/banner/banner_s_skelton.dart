@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
 
-import '../../../constants.dart';
 import '../skelton.dart';
 
 class BannerSSkelton extends StatelessWidget {

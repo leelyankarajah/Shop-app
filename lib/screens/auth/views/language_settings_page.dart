@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
 
 class LanguageSettingsPage extends StatefulWidget {
   final String currentLanguage; // to know which one is selected now
@@ -13,14 +14,12 @@ class LanguageSettingsPage extends StatefulWidget {
 }
 
 class _LanguageSettingsPageState extends State<LanguageSettingsPage> {
-  static const Color primaryColor = Color(0xFF0B3B8C);
-
   late String _selectedLanguage;
 
   final List<String> _languages = [
     'English',
     'Arabic',
-    'French', // you can remove or add more
+    'French',
   ];
 
   @override
@@ -79,7 +78,6 @@ class _LanguageSettingsPageState extends State<LanguageSettingsPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // نرجّع اللغة المختارة للصفحة السابقة
                   Navigator.pop(context, _selectedLanguage);
                 },
                 style: ElevatedButton.styleFrom(

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+
 import 'package:shop/route/route_constants.dart';
 import 'package:shop/route/router.dart' as router;
 import 'package:shop/theme/app_theme.dart';
 import 'package:shop/screens/auth/views/providers/cart_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:shop/providers/owner_provider.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ===== تهيئة Firebase حسب المنصة =====
+  // تهيئة Firebase حسب المنصة
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
@@ -29,7 +31,12 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider<CartProvider>(
+          create: (_) => CartProvider(),
+        ),
+        ChangeNotifierProvider<OwnerProvider>(
+          create: (_) => OwnerProvider(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -46,8 +53,8 @@ class MyApp extends StatelessWidget {
       title: 'Supermarket - Grocery Store',
       theme: AppTheme.lightTheme(context),
       themeMode: ThemeMode.light,
+      initialRoute: roleSelectRoute,
       onGenerateRoute: router.generateRoute,
-      initialRoute: logInScreenRoute,
     );
   }
 }

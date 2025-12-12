@@ -1,156 +1,119 @@
+// addresses_page.dart
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
 
-class AddressesPage extends StatelessWidget {
+class AddressesPage extends StatefulWidget {
   const AddressesPage({super.key});
 
-  static const Color primaryColor = Color(0xFF0B3B8C);
+  @override
+  State<AddressesPage> createState() => _AddressesPageState();
+}
+
+class _AddressesPageState extends State<AddressesPage> {
+  final List<Map<String, String>> _addresses = [
+    {
+      'label': 'Home',
+      'details': 'Nablus Street, Building 12, Apartment 4',
+    },
+    {
+      'label': 'Work',
+      'details': 'Gaza City, Tech Hub Office, 3rd floor',
+    },
+  ];
+
+  void _addAddress() {
+    // Demo فقط، لاحقاً ممكن تعملي فورم
+    setState(() {
+      _addresses.add({
+        'label': 'New address',
+        'details': 'Tap here to edit later (demo)',
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F7),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: primaryColor,
-        elevation: 0,
-        title: const Text(
-          'Addresses',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: const Text('My addresses'),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
-        children: [
-          _AddressCard(
-            label: 'Home',
-            address: 'Ramallah / Al-Bireh, Main Street, Building 12',
-            isDefault: true,
-          ),
-          const SizedBox(height: 10),
-          const _AddressCard(
-            label: 'Work',
-            address: 'Ramallah, Industrial Area, Company Building',
-          ),
-          const SizedBox(height: 20),
-          OutlinedButton.icon(
-            onPressed: () {
-              // Later: open "Add new address" form
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Add new address (UI only for now)'),
-                ),
-              );
-            },
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: const BorderSide(color: primaryColor),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addAddress,
+        child: const Icon(Icons.add),
+      ),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(defaultPadding),
+        itemCount: _addresses.length,
+        separatorBuilder: (_, __) =>
+            const SizedBox(height: defaultPadding / 2),
+        itemBuilder: (context, index) {
+          final address = _addresses[index];
+          return Dismissible(
+            key: ValueKey(address['label']! + index.toString()),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              color: Colors.redAccent,
+              child: const Icon(
+                Icons.delete_outline,
+                color: Colors.white,
               ),
             ),
-            icon: const Icon(Icons.add_location_alt_outlined),
-            label: const Text(
-              'Add New Address',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AddressCard extends StatelessWidget {
-  final String label;
-  final String address;
-  final bool isDefault;
-
-  const _AddressCard({
-    required this.label,
-    required this.address,
-    this.isDefault = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-            color: Colors.black.withOpacity(0.04),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.location_on_outlined,
-            color: AddressesPage.primaryColor,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                    if (isDefault) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE3F2FD),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'Default',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Color(0xFF0B3B8C),
+            onDismissed: (_) {
+              setState(() {
+                _addresses.removeAt(index);
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.all(defaultPadding),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(defaultBorderRadious * 1.3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.location_on_outlined,
+                    color: primaryColor,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          address['label'] ?? 'Address',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
                           ),
                         ),
-                      ),
-                    ]
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  address,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
+                        const SizedBox(height: 4),
+                        Text(
+                          address['details'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: blackColor60,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              // Later: edit address
-            },
-            icon: const Icon(
-              Icons.edit_outlined,
-              color: Colors.black45,
-              size: 20,
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

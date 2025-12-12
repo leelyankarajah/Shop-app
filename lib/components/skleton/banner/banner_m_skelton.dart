@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
 
-import '../../../constants.dart';
 import '../skelton.dart';
 
 class BannerMSkelton extends StatelessWidget {
-  const BannerMSkelton({
-    super.key,
-  });
+  const BannerMSkelton({super.key});
 
   @override
   Widget build(BuildContext context) {

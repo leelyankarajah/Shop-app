@@ -1,165 +1,136 @@
+// lib/screens/auth/views/offers_screen.dart
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
+import 'package:shop/components/skleton/others/offers_skelton.dart';
 
 class OffersScreen extends StatelessWidget {
   const OffersScreen({super.key});
 
-  static const Color primaryColor = Color(0xFF0B3B8C);
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final List<_Offer> offers = [
+      _Offer(
+        title: "Weekend sale",
+        description: "Up to 30% off on dairy products.",
+        tag: "Top deal",
+      ),
+      _Offer(
+        title: "Buy 2 get 1 free",
+        description: "Snacks & drinks selected items.",
+        tag: "Limited time",
+      ),
+      _Offer(
+        title: "Free delivery",
+        description: "For orders above ₪150.",
+        tag: "Today only",
+      ),
+    ];
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F7),
       appBar: AppBar(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Offers',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: const Text('Offers'),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _OfferCard(
-            image: "assets/images/offer.webp",
-            badge: "50% OFF",
-            title: "Summer Sale",
-            description: "Save big on the summer collection!",
-            buttonText: "Grab Offer",
-          ),
-          const SizedBox(height: 16),
-          _OfferCard(
-            image: "assets/images/offer.webp",
-            badge: "Buy 1 Get 1",
-            title: "BOGO Offer",
-            description: "Buy one item and get another free!",
-            buttonText: "Grab Offer",
-          ),
-          const SizedBox(height: 16),
-          _OfferCard(
-            image: "assets/images/offer.webp",
-            badge: "Hot Deal",
-            title: "Weekend Big Sale",
-            description: "Special discounts this weekend only.",
-            buttonText: "Shop Now",
-          ),
-        ],
-      ),
+      body: offers.isEmpty
+          ? const Padding(
+              padding: EdgeInsets.all(defaultPadding),
+              child: OffersSkelton(),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(defaultPadding),
+              itemCount: offers.length,
+              itemBuilder: (context, index) {
+                final o = offers[index];
+                return Container(
+                  margin:
+                      const EdgeInsets.only(bottom: defaultPadding * 0.75),
+                  padding: const EdgeInsets.all(defaultPadding),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                      defaultBorderRadious * 1.4,
+                    ),
+                    gradient: LinearGradient(
+                      colors: [
+                        primaryColor.withOpacity(0.06),
+                        primaryColor.withOpacity(0.12),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              o.tag.toUpperCase(),
+                              style: theme.textTheme.labelSmall
+                                  ?.copyWith(
+                                color: primaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              o.title,
+                              style: theme.textTheme.titleMedium
+                                  ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              o.description,
+                              style: theme.textTheme.bodySmall
+                                  ?.copyWith(
+                                color: blackColor60,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      OutlinedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Offer "${o.title}" applied (demo only)',
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: primaryColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                        ),
+                        child: const Text('Use'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }
 
-class _OfferCard extends StatelessWidget {
-  final String image;
-  final String badge;
+class _Offer {
   final String title;
   final String description;
-  final String buttonText;
+  final String tag;
 
-  const _OfferCard({
-    required this.image,
-    required this.badge,
+  _Offer({
     required this.title,
     required this.description,
-    required this.buttonText,
+    required this.tag,
   });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-            color: Colors.black.withOpacity(0.05),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image + Badge
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.asset(
-                  image,
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                top: 10,
-                left: 10,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    badge,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Text
-          Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: OffersScreen.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: Text(buttonText),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
 }

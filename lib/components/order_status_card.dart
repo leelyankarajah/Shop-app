@@ -31,6 +31,8 @@ class OrderStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       borderRadius:
           const BorderRadius.all(Radius.circular(defaultBorderRadious)),
@@ -39,56 +41,94 @@ class OrderStatusCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
+            margin: const EdgeInsets.only(bottom: defaultPadding),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius:
-                  const BorderRadius.all(Radius.circular(defaultBorderRadious)),
-              border: Border.all(color: Theme.of(context).dividerColor),
+                  BorderRadius.circular(defaultBorderRadious * 1.4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 16,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
             child: Column(
               children: [
+                // Header
                 Padding(
                   padding: const EdgeInsets.all(defaultPadding),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          DefaultTextStyle(
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                              color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: blackColor5,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    "Order",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      width: defaultPadding / 2),
+                                  Text(
+                                    "#$orderId",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                const Text("Order"),
-                                const SizedBox(width: defaultPadding / 2),
-                                Text("#$orderId"),
-                              ],
+                            const SizedBox(
+                                height: defaultPadding / 2),
+                            Text(
+                              "Placed on $placedOn",
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: blackColor60,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: defaultPadding / 2),
-                          Text(
-                            "Placed on $placedOn",
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       SvgPicture.asset(
                         "assets/icons/miniRight.svg",
                         height: 24,
                         width: 24,
                         colorFilter: ColorFilter.mode(
-                            Theme.of(context).dividerColor, BlendMode.srcIn),
-                      )
+                          theme.dividerColor,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     ],
                   ),
                 ),
+
                 const Divider(height: 1),
+
+                // Progress
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: defaultPadding,
+                    horizontal: defaultPadding,
+                  ),
                   child: OrderProgress(
                     orderStatus: orderStatus,
                     processingStatus: processingStatus,
@@ -98,13 +138,18 @@ class OrderStatusCard extends StatelessWidget {
                     isCanceled: isCancled,
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: defaultPadding),
-                  child: Column(
-                    children: products ?? [],
+
+                if (products != null && products!.isNotEmpty) ...[
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: defaultPadding,
+                        vertical: defaultPadding),
+                    child: Column(
+                      children: products!,
+                    ),
                   ),
-                )
+                ],
               ],
             ),
           ),

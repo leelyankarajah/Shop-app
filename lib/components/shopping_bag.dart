@@ -15,38 +15,58 @@ class ShoppingBag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {},
-      icon: Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-          SvgPicture.asset(
-            numOfItem == null
-                ? "assets/icons/Bag.svg"
-                : "assets/icons/bag_full.svg",
-            height: 24,
-            width: 24,
-            colorFilter: ColorFilter.mode(
-                color ?? Theme.of(context).iconTheme.color!, BlendMode.srcIn),
+    final int count = numOfItem ?? 0;
+    final bool showBadge = count > 0;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          height: 44,
+          width: 44,
+          decoration: BoxDecoration(
+            color: color ?? blackColor5,
+            shape: BoxShape.circle,
           ),
-          if (numOfItem != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                numOfItem!.toString(),
-                style: TextStyle(
-                  fontFamily: grandisExtendedFont,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? blackColor
-                      : Colors.white,
+          alignment: Alignment.center,
+          child: SvgPicture.asset(
+            "assets/icons/Bag.svg",
+            height: 22,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).iconTheme.color ?? blackColor80,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+        if (showBadge)
+          Positioned(
+            right: -2,
+            top: -2,
+            child: Container(
+              height: 18,
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? primaryColor
+                    : primaryColor,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  width: 1.2,
                 ),
               ),
-            )
-        ],
-      ),
+              alignment: Alignment.center,
+              child: Text(
+                count > 99 ? "99+" : "$count",
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

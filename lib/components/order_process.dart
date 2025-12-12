@@ -34,7 +34,6 @@ class OrderProgress extends StatelessWidget {
         ),
         Expanded(
           child: ProcessDotWithLine(
-            isActive: processingStatus == OrderProcessStatus.processing,
             title: "Processing",
             status: processingStatus,
             nextStatus: packedStatus,
@@ -45,34 +44,22 @@ class OrderProgress extends StatelessWidget {
             title: "Packed",
             status: packedStatus,
             nextStatus: shippedStatus,
-            isActive: packedStatus == OrderProcessStatus.processing,
           ),
         ),
         Expanded(
           child: ProcessDotWithLine(
             title: "Shipped",
             status: shippedStatus,
-            nextStatus: isCanceled ? OrderProcessStatus.error : deliveredStatus,
-            isActive: shippedStatus == OrderProcessStatus.processing,
+            nextStatus: deliveredStatus,
           ),
         ),
-        isCanceled
-            ? const Expanded(
-                child: ProcessDotWithLine(
-                  title: "Canceled",
-                  status: OrderProcessStatus.canceled,
-                  isShowRightLine: false,
-                  isActive: true,
-                ),
-              )
-            : Expanded(
-                child: ProcessDotWithLine(
-                  title: "Delivered",
-                  status: deliveredStatus,
-                  isShowRightLine: false,
-                  isActive: deliveredStatus == OrderProcessStatus.done,
-                ),
-              ),
+        Expanded(
+          child: ProcessDotWithLine(
+            isShowRightLine: false,
+            title: isCanceled ? "Canceled" : "Delivered",
+            status: isCanceled ? OrderProcessStatus.canceled : deliveredStatus,
+          ),
+        ),
       ],
     );
   }
@@ -97,22 +84,27 @@ class ProcessDotWithLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool done = status == OrderProcessStatus.done;
+    final bool processing = status == OrderProcessStatus.processing;
+    final bool error =
+        status == OrderProcessStatus.error || status == OrderProcessStatus.canceled;
+
+    final Color dotBgColor = error
+        ? errorColor
+        : done || processing || isActive
+            ? successColor
+            : Theme.of(context).cardColor;
+
+    final Color borderColor = error
+        ? errorColor
+        : done || processing || isActive
+            ? successColor
+            : Theme.of(context).dividerColor;
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                fontWeight: FontWeight.w500,
-                color: isActive
-                    ? Theme.of(context).textTheme.bodyLarge!.color
-                    : Theme.of(context).textTheme.bodyMedium!.color,
-              ),
-        ),
-        const SizedBox(height: defaultPadding / 2),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (isShowLeftLine)
               Expanded(
@@ -120,9 +112,23 @@ class ProcessDotWithLine extends StatelessWidget {
                   height: 2,
                   color: lineColor(context, status),
                 ),
+              )
+            else
+              const Spacer(),
+            Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: dotBgColor,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: borderColor,
+                  width: 1.4,
+                ),
               ),
-            if (!isShowLeftLine) const Spacer(),
-            statusWidget(context, status),
+              alignment: Alignment.center,
+              child: _buildInnerIcon(context),
+            ),
             if (isShowRightLine)
               Expanded(
                 child: Container(
@@ -131,12 +137,64 @@ class ProcessDotWithLine extends StatelessWidget {
                       ? lineColor(context, nextStatus!)
                       : successColor,
                 ),
-              ),
-            if (!isShowRightLine) const Spacer(),
+              )
+            else
+              const Spacer(),
           ],
-        )
+        ),
+        const SizedBox(height: defaultPadding / 2),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight:
+                    (done || processing || isActive) ? FontWeight.w600 : FontWeight.w400,
+                color: error
+                    ? errorColor
+                    : (done || processing || isActive)
+                        ? successColor
+                        : blackColor60,
+              ),
+        ),
       ],
     );
+  }
+
+  Widget _buildInnerIcon(BuildContext context) {
+    switch (status) {
+      case OrderProcessStatus.done:
+        return const Icon(
+          Icons.check,
+          size: 16,
+          color: Colors.white,
+        );
+      case OrderProcessStatus.processing:
+        return const SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        );
+      case OrderProcessStatus.error:
+      case OrderProcessStatus.canceled:
+        return const Icon(
+          Icons.close,
+          size: 16,
+          color: Colors.white,
+        );
+      case OrderProcessStatus.notDoneYeat:
+      default:
+        return Container(
+          width: 10,
+          height: 10,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: blackColor20,
+          ),
+        );
+    }
   }
 }
 
@@ -147,55 +205,52 @@ Widget statusWidget(BuildContext context, OrderProcessStatus status) {
     case OrderProcessStatus.processing:
       return CircleAvatar(
         radius: 12,
-        backgroundColor: successColor,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+        backgroundColor: successColor.withOpacity(0.12),
+        child: const SizedBox(
+          width: 14,
+          height: 14,
           child: CircularProgressIndicator(
-            color: Theme.of(context).scaffoldBackgroundColor,
             strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(successColor),
           ),
         ),
       );
-    case OrderProcessStatus.notDoneYeat:
-      return CircleAvatar(
+
+    case OrderProcessStatus.done:
+      return const CircleAvatar(
         radius: 12,
-        backgroundColor: Theme.of(context).dividerColor,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          ),
+        backgroundColor: successColor,
+        child: Icon(
+          Icons.check,
+          size: 16,
+          color: Colors.white,
         ),
       );
+
     case OrderProcessStatus.error:
-      return CircleAvatar(
-        radius: 12,
-        backgroundColor: errorColor,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          ),
-        ),
-      );
     case OrderProcessStatus.canceled:
-      return CircleAvatar(
+      return const CircleAvatar(
         radius: 12,
         backgroundColor: errorColor,
         child: Icon(
           Icons.close,
-          size: 12,
-          color: Theme.of(context).scaffoldBackgroundColor,
+          size: 16,
+          color: Colors.white,
         ),
       );
+
+    case OrderProcessStatus.notDoneYeat:
     default:
       return CircleAvatar(
         radius: 12,
-        backgroundColor: successColor,
-        child: Icon(
-          Icons.done,
-          size: 12,
-          color: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).cardColor,
+        child: Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Theme.of(context).dividerColor,
+          ),
         ),
       );
   }
@@ -205,13 +260,9 @@ Color lineColor(BuildContext context, OrderProcessStatus status) {
   switch (status) {
     case OrderProcessStatus.notDoneYeat:
       return Theme.of(context).dividerColor;
-
     case OrderProcessStatus.error:
-      return errorColor;
-
     case OrderProcessStatus.canceled:
       return errorColor;
-
     default:
       return successColor;
   }

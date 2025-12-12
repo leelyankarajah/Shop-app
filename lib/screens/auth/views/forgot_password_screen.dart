@@ -1,5 +1,7 @@
+// lib/screens/auth/views/forgot_password_screen.dart
 import 'package:flutter/material.dart';
-import '../../../constants.dart';
+import 'package:shop/constants.dart';
+import 'package:shop/route/route_constants.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -10,106 +12,81 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  String email = '';
+  String _email = '';
+
+  void _sendReset() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    _formKey.currentState!.save();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Reset link sent to $_email (demo only)'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 800), () {
+      Navigator.pushReplacementNamed(context, logInScreenRoute);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: const EdgeInsets.all(defaultPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // الصورة تأخذ 30% من الشاشة أو 200px كحد أقصى
-                      SizedBox(
-                        height: size.height * 0.3 > 200 ? 200 : size.height * 0.3,
-                        child: Image.asset(
-                          "assets/images/forgot_password.png",
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Center(child: Icon(Icons.broken_image, size: 50)),
-                        ),
-                      ),
-                      const SizedBox(height: defaultPadding),
-                      Text(
-                        "Forgot Password?",
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: defaultPadding / 2),
-                      const Text(
-                        "Enter your email address below and we'll send you a link to reset your password.",
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: defaultPadding * 2),
-                      Form(
-                        key: _formKey,
-                        child: TextFormField(
-                          onSaved: (value) => email = value ?? '',
-                          validator: (value) {
-                            if (value == null || value.isEmpty || !value.contains('@')) {
-                              return "Please enter a valid email";
-                            }
-                            return null;
-                          },
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            hintText: "Email Address",
-                            prefixIcon: const Icon(Icons.email_outlined),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: defaultPadding * 2),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Password reset link sent to $email'),
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("Send Reset Link"),
-                      ),
-                      const Spacer(),
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Back to Login"),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      appBar: AppBar(
+        title: const Text('Forgot password'),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(defaultPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Enter your email address and we will send you a link to reset your password.',
+              style: TextStyle(
+                fontSize: 13,
+                color: blackColor60,
+                height: 1.4,
               ),
             ),
-          );
-        },
+            const SizedBox(height: defaultPadding),
+
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'example@mail.com',
+                  labelText: 'Email',
+                ),
+                keyboardType: TextInputType.emailAddress,
+                validator: emaildValidator,
+                onSaved: (value) => _email = value!.trim(),
+              ),
+            ),
+
+            const SizedBox(height: defaultPadding * 1.5),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _sendReset,
+                child: const Text('Send reset link'),
+              ),
+            ),
+
+            const SizedBox(height: defaultPadding / 2),
+
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, logInScreenRoute);
+                },
+                child: const Text('Back to login'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

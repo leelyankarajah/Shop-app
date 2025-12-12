@@ -1,9 +1,7 @@
-import 'package:flutter/gestures.dart';
+// lib/screens/auth/views/signup_screen.dart
 import 'package:flutter/material.dart';
-import 'package:shop/screens/auth/views/components/sign_up_form.dart';
-import 'package:shop/route/route_constants.dart';
-
-import '../../../constants.dart';
+import 'package:shop/constants.dart';
+import 'components/sign_up_form.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,27 +11,26 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // صورة في الأعلى
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.35,
+              height: size.height * 0.3,
               width: double.infinity,
               child: Image.asset(
-                "assets/images/cart.png",
+                "assets/images/sign_up.png",
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Center(
-                  child: Icon(
-                    Icons.broken_image,
-                    size: 48,
-                    color: Theme.of(context).disabledColor,
-                  ),
-                ),
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.broken_image,
+                        size: 48, color: Theme.of(context).disabledColor),
               ),
             ),
             Padding(
@@ -42,71 +39,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Let’s get started!",
+                    "Create account",
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: defaultPadding / 2),
                   const Text(
-                    "Please enter your valid data in order to create an account.",
+                    "Fill your information below to create a new account.",
                   ),
                   const SizedBox(height: defaultPadding),
+
                   SignUpForm(formKey: _formKey),
-                  const SizedBox(height: defaultPadding),
-                  Row(
-                    children: [
-                      Checkbox(
-                        onChanged: (value) {},
-                        value: false,
-                      ),
-                      Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            text: "I agree with the",
-                            children: [
-                              TextSpan(
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Navigator.pushNamed(
-                                        context, termsOfServicesScreenRoute);
-                                  },
-                                text: " Terms of service ",
-                                style: const TextStyle(
-                                  color: primaryColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const TextSpan(
-                                text: "& privacy policy.",
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: defaultPadding * 2),
-                  ElevatedButton(
-                    onPressed: () {
-                      // After sign up, go to login screen (no other app screens kept)
-                      Navigator.pushReplacementNamed(context, logInScreenRoute);
-                    },
-                    child: const Text("Continue"),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Do you have an account?"),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, logInScreenRoute);
-                        },
-                        child: const Text("Log in"),
-                      )
-                    ],
+
+                  const SizedBox(height: defaultPadding * 1.5),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Account created (local only)'),
+                              behavior: SnackBarBehavior.floating,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text("Sign up"),
+                    ),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -3,6 +3,9 @@ import 'package:shop/screens/auth/views/forgot_password_screen.dart';
 import 'package:shop/screens/auth/views/home_screen.dart';
 import 'package:shop/screens/auth/views/login_screen.dart';
 import 'package:shop/screens/auth/views/signup_screen.dart';
+import 'package:shop/screens/auth/role_select.dart';
+import 'package:shop/screens/auth/owner_login.dart';
+import 'package:shop/screens/owner/owner_dashboard.dart';
 import 'package:shop/screens/auth/views/cart_screen.dart';
 import 'package:shop/screens/auth/views/offers_screen.dart';
 import 'package:shop/route/route_constants.dart';
@@ -11,6 +14,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case logInScreenRoute:
       return MaterialPageRoute(builder: (_) => const LoginScreen());
+    case roleSelectRoute:
+      return MaterialPageRoute(builder: (_) => const RoleSelectScreen());
+    case ownerLoginRoute:
+      return MaterialPageRoute(builder: (_) => const OwnerLoginScreen());
+    case ownerDashboardRoute:
+      return MaterialPageRoute(builder: (_) => const OwnerDashboard());
     case homeScreenRoute:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
     case signUpScreenRoute:

@@ -78,4 +78,8 @@ final emaildValidator = MultiValidator([
   EmailValidator(errorText: "Enter a valid email address"),
 ]);
 
+final nameValidator = MultiValidator([
+  RequiredValidator(errorText: 'Full name is required'),
+]);
+
 const pasNotMatchErrorText = "passwords do not match";

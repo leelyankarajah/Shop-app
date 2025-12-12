@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
 
-import '../../../constants.dart';
 import '../skelton.dart';
 
 class OffersSkelton extends StatelessWidget {
-  const OffersSkelton({
-    super.key,
-  });
+  const OffersSkelton({super.key});
 
   @override
   Widget build(BuildContext context) {

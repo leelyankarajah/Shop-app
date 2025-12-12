@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop/constants.dart';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
@@ -11,8 +12,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
-
-  static const Color primaryColor = Color(0xFF0B3B8C);
 
   @override
   void dispose() {
@@ -36,7 +35,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(defaultPadding),
         child: Form(
           key: _formKey,
           child: Column(
@@ -46,7 +45,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
                 style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
               const SizedBox(height: 16),
-              
               TextFormField(
                 controller: _subjectController,
                 decoration: _decoration('Subject'),
@@ -54,15 +52,14 @@ class _ContactUsPageState extends State<ContactUsPage> {
                     (v == null || v.trim().isEmpty) ? 'Please enter a subject' : null,
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: _messageController,
                 maxLines: 5,
                 decoration: _decoration('Message'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Message cannot be empty' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Message cannot be empty'
+                    : null,
               ),
-
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -101,7 +98,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
   void _send() {
     if (_formKey.currentState?.validate() ?? false) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Message sent (local only for now)')),
+        const SnackBar(
+          content: Text('Message sent (local only for now)'),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
       Navigator.pop(context);
     }
