@@ -49,7 +49,7 @@ class CheckoutScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 8),
-                  _AddressCard(
+                  const _AddressCard(
                     title: 'Home',
                     address: 'Nablus Street, Building 12, Apartment 4',
                     phone: '+970 59 000 0000',

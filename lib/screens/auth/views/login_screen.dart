@@ -28,9 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    Future.delayed(const Duration(milliseconds: 600), () {
-      Navigator.pushReplacementNamed(context, homeScreenRoute);
-    });
+    Navigator.pushReplacementNamed(context, homeScreenRoute);
   }
 
   @override

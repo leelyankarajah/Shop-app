@@ -242,7 +242,7 @@ class _CartScreenState extends State<CartScreen> {
                   padding: const EdgeInsets.all(defaultPadding),
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
-                    border: Border(
+                    border: const Border(
                       top: BorderSide(
                         color: blackColor10,
                       ),

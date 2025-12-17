@@ -52,21 +52,21 @@ class AccountPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         userName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           color: blackColor60,
                         ),

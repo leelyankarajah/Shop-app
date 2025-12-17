@@ -43,7 +43,7 @@ class _SignUpFormState extends State<SignUpForm> {
             decoration: const InputDecoration(
               hintText: "Enter your full name",
             ),
-            validator: nameValidator,
+            validator: nameValidator.call,
             onSaved: (value) => _fullName = value!.trim(),
           ),
           const SizedBox(height: defaultPadding),
@@ -59,7 +59,7 @@ class _SignUpFormState extends State<SignUpForm> {
             decoration: const InputDecoration(
               hintText: "example@mail.com",
             ),
-            validator: emaildValidator,
+            validator: emaildValidator.call,
             onSaved: (value) => _email = value!.trim(),
           ),
           const SizedBox(height: defaultPadding),
@@ -90,7 +90,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
               ),
             ),
-            validator: passwordValidator,
+            validator: passwordValidator.call,
             onSaved: (value) => _password = value ?? '',
           ),
           const SizedBox(height: defaultPadding),

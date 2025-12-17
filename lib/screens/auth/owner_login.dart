@@ -109,7 +109,7 @@ class _OwnerLoginBodyState extends State<OwnerLoginBody> {
                     decoration: const InputDecoration(
                       hintText: 'owner@shop.com',
                     ),
-                    validator: emaildValidator,
+                    validator: emaildValidator.call,
                     onSaved: (v) => _email = (v ?? '').trim(),
                   ),
 
@@ -141,7 +141,7 @@ class _OwnerLoginBodyState extends State<OwnerLoginBody> {
                         },
                       ),
                     ),
-                    validator: passwordValidator,
+                    validator: passwordValidator.call,
                     onSaved: (v) => _password = v ?? '',
                   ),
                 ],
@@ -165,11 +165,11 @@ class _OwnerLoginBodyState extends State<OwnerLoginBody> {
 
             const SizedBox(height: defaultPadding / 2),
 
-            Center(
+            const Center(
               child: Text(
                 'This is a demo login – no real backend is connected yet.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   color: blackColor60,
                 ),

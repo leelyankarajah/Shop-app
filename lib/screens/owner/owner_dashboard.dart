@@ -5,7 +5,7 @@ import 'package:shop/models/product_model.dart';
 import 'package:shop/constants.dart';
 
 class OwnerDashboard extends StatefulWidget {
-  const OwnerDashboard({Key? key}) : super(key: key);
+  const OwnerDashboard({super.key});
 
   @override
   State<OwnerDashboard> createState() => _OwnerDashboardState();

@@ -36,10 +36,10 @@ class PaymentMethodsPage extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+            child: const Padding(
+              padding: EdgeInsets.all(16),
               child: Column(
-                children: const [
+                children: [
                   CardInfo(
                     last4Digits: '4321',
                     name: 'Hajar Al-Souqi',

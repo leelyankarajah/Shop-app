@@ -60,7 +60,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   labelText: 'Email',
                 ),
                 keyboardType: TextInputType.emailAddress,
-                validator: emaildValidator,
+                validator: emaildValidator.call,
                 onSaved: (value) => _email = value!.trim(),
               ),
             ),

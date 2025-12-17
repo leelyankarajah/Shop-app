@@ -59,10 +59,10 @@ class OrderSuccessPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     'Thank you for shopping with Smart Cart.\nYour order is being prepared.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       color: Colors.black54,
                       height: 1.4,

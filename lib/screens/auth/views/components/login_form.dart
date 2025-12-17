@@ -39,7 +39,7 @@ class _LogInFormState extends State<LogInForm> {
             decoration: const InputDecoration(
               hintText: "example@mail.com",
             ),
-            validator: emaildValidator,
+            validator: emaildValidator.call,
             onSaved: (value) => _email = value!.trim(),
           ),
           const SizedBox(height: defaultPadding),
@@ -70,7 +70,7 @@ class _LogInFormState extends State<LogInForm> {
                 },
               ),
             ),
-            validator: passwordValidator,
+            validator: passwordValidator.call,
             onSaved: (value) => _password = value ?? '',
           ),
         ],

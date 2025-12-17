@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
+          print('Bottom nav tapped: $index');
           setState(() {
             _currentIndex = index;
           });
@@ -107,6 +108,7 @@ class _HomeTab extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: () {
+                  print('Cart icon pressed');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -288,6 +290,7 @@ class _ProductCard extends StatelessWidget {
                       height: 32,
                       child: ElevatedButton(
                         onPressed: () {
+                          print('Add button pressed for ${product.title}');
                           cart.addProduct({
                             'id': product.id,
                             'name': product.title,
