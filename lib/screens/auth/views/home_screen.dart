@@ -202,7 +202,6 @@ class _HomeTab extends StatelessWidget {
     );
   }
 }
-
 class _ProductCard extends StatelessWidget {
   final ProductModel product;
 
@@ -213,12 +212,14 @@ class _ProductCard extends StatelessWidget {
     final cart = context.read<CartProvider>();
     final owner = context.read<OwnerProvider>();
 
-    final double priceToShow = product.priceAfetDiscount ?? product.price;
+    final double priceToShow =
+        product.priceAfetDiscount ?? product.price;
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(defaultBorderRadious * 1.4),
+        borderRadius:
+            BorderRadius.circular(defaultBorderRadious * 1.4),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -230,31 +231,37 @@ class _ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // صورة
+          /// Image
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(defaultBorderRadious * 1.4),
-                topRight: Radius.circular(defaultBorderRadious * 1.4),
+                topLeft:
+                    Radius.circular(defaultBorderRadious * 1.4),
+                topRight:
+                    Radius.circular(defaultBorderRadious * 1.4),
               ),
               child: Image.network(
                 product.image,
-                fit: BoxFit.cover,
                 width: double.infinity,
-                errorBuilder: (_, __, ___) => Container(
-                  color: blackColor5,
-                  alignment: Alignment.center,
-                  child: const Icon(
-                    Icons.image_outlined,
-                    size: 32,
-                    color: blackColor40,
-                  ),
-                ),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+  color: blackColor5,
+  alignment: Alignment.center,
+  child: const Icon(
+    Icons.image_outlined,
+    size: 32,
+    color: blackColor40,
+  ),
+),
+
               ),
             ),
           ),
+
+          /// Content
           Padding(
-            padding: const EdgeInsets.all(defaultPadding / 1.3),
+            padding:
+                const EdgeInsets.all(defaultPadding / 1.3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -277,6 +284,8 @@ class _ProductCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
+
+                /// Price + Button
                 Row(
                   children: [
                     Text(
@@ -290,7 +299,6 @@ class _ProductCard extends StatelessWidget {
                       height: 32,
                       child: ElevatedButton(
                         onPressed: () {
-                          print('Add button pressed for ${product.title}');
                           cart.addProduct({
                             'id': product.id,
                             'name': product.title,
@@ -298,24 +306,33 @@ class _ProductCard extends StatelessWidget {
                             'img': product.image,
                             'qty': 1,
                           });
-                          owner.addOrder(product.id, quantity: 1);
 
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          owner.addOrder(
+                            product.id,
+                            quantity: 1,
+                          );
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
                             SnackBar(
-                              content:
-                                  Text('${product.title} added to cart'),
-                              behavior: SnackBarBehavior.floating,
-                              duration:
-                                  const Duration(milliseconds: 900),
+                              content: Text(
+                                  '${product.title} added to cart'),
+                              behavior:
+                                  SnackBarBehavior.floating,
+                              duration: const Duration(
+                                  milliseconds: 900),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
+                          minimumSize:
+                              const Size(0, 32), // ✅ مهم
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(999),
+                            borderRadius:
+                                BorderRadius.circular(999),
                           ),
                         ),
                         child: const Text(
