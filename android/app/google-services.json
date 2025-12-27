@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "1047221295130",
-    "project_id": "smart-cart-48df4",
-    "storage_bucket": "smart-cart-48df4.firebasestorage.app"
+    "project_number": "345739362198",
+    "firebase_url": "https://shopappp-7e713-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "shopappp-7e713",
+    "storage_bucket": "shopappp-7e713.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1047221295130:android:f1ee665576a048dacb19a3",
+        "mobilesdk_app_id": "1:345739362198:android:257a65403622d191ea27b7",
         "android_client_info": {
           "package_name": "com.example.shop"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCRjCfIaY8DV-elgQzdoPJPpCoif0rtLd0"
+          "current_key": "AIzaSyBOw7XZdTvpkyFuzj7I_4p48l7sZP1RbfM"
         }
       ],
       "services": {

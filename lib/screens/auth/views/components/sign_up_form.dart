@@ -1,138 +1,167 @@
-// lib/screens/auth/views/components/sign_up_form.dart
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+
 import 'package:shop/constants.dart';
+import 'package:shop/services/auth_service.dart';
+import 'package:shop/screens/auth/views/home_screen.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({
-    super.key,
-    required this.formKey,
-  });
-
-  final GlobalKey<FormState> formKey;
+  const SignUpForm({super.key});
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
 }
 
 class _SignUpFormState extends State<SignUpForm> {
-  // ignore: unused_field
-  String _fullName = '';
-  // ignore: unused_field
-  String _email = '';
-  // ignore: unused_field
-  String _password = '';
-  // ignore: unused_field
-  String _confirmPassword = '';
-  bool _passwordObscured = true;
-  bool _confirmPasswordObscured = true;
+  final _formKey = GlobalKey<FormState>();
+
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
+
+  bool _obscured = true;
+  bool _obscuredConfirm = true;
+  bool _loading = false;
+
+  final AuthService _authService = AuthService();
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    _confirmCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onSignUpPressed(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _loading = true);
+
+    try {
+      await _authService.register(
+        email: _emailCtrl.text,
+        password: _passwordCtrl.text,
+      );
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sign up failed. Please try again.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: widget.formKey,
+      key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Full name
-          Text(
-            "Full name",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: defaultPadding / 2),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: "Enter your full name",
-            ),
-            validator: nameValidator.call,
-            onSaved: (value) => _fullName = value!.trim(),
-          ),
-          const SizedBox(height: defaultPadding),
-
           // Email
-          Text(
-            "Email",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: defaultPadding / 2),
           TextFormField(
+            controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-              hintText: "example@mail.com",
+              labelText: 'Email',
+              hintText: 'example@email.com',
             ),
-            validator: emaildValidator.call,
-            onSaved: (value) => _email = value!.trim(),
+            validator: MultiValidator([
+              RequiredValidator(errorText: 'Email is required'),
+              EmailValidator(errorText: 'Enter a valid email'),
+            ]),
           ),
           const SizedBox(height: defaultPadding),
 
           // Password
-          Text(
-            "Password",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: defaultPadding / 2),
           TextFormField(
-            obscureText: _passwordObscured,
+            controller: _passwordCtrl,
+            obscureText: _obscured,
             decoration: InputDecoration(
-              hintText: "Create a password",
+              labelText: 'Password',
               suffixIcon: IconButton(
                 icon: Icon(
-                  _passwordObscured ? Icons.visibility_off : Icons.visibility,
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .color!
-                      .withOpacity(0.3), // 👈 برضه عدلناها
+                  _obscured
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                 ),
                 onPressed: () {
                   setState(() {
-                    _passwordObscured = !_passwordObscured;
+                    _obscured = !_obscured;
                   });
                 },
               ),
             ),
-            validator: passwordValidator.call,
-            onSaved: (value) => _password = value ?? '',
+            validator: MultiValidator([
+              RequiredValidator(errorText: 'Password is required'),
+              MinLengthValidator(6,
+                  errorText: 'Password must be at least 6 characters'),
+            ]),
           ),
+
           const SizedBox(height: defaultPadding),
 
-          // Confirm password
-          Text(
-            "Confirm password",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: defaultPadding / 2),
+          // Confirm
           TextFormField(
-            obscureText: _confirmPasswordObscured,
+            controller: _confirmCtrl,
+            obscureText: _obscuredConfirm,
             decoration: InputDecoration(
-              hintText: "Re-enter your password",
+              labelText: 'Confirm password',
               suffixIcon: IconButton(
                 icon: Icon(
-                  _confirmPasswordObscured
-                      ? Icons.visibility_off
-                      : Icons.visibility,
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .color!
-                      .withOpacity(0.3),
+                  _obscuredConfirm
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                 ),
                 onPressed: () {
                   setState(() {
-                    _confirmPasswordObscured = !_confirmPasswordObscured;
+                    _obscuredConfirm = !_obscuredConfirm;
                   });
                 },
               ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please confirm your password';
+                return 'Please re-enter your password';
               }
-              if (value != _password) {
+              if (value != _passwordCtrl.text) {
                 return 'Passwords do not match';
               }
               return null;
             },
-            onSaved: (value) => _confirmPassword = value ?? '',
+          ),
+
+          const SizedBox(height: defaultPadding * 1.5),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _loading ? null : () => _onSignUpPressed(context),
+              child: _loading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text('Sign up'),
+            ),
           ),
         ],
       ),

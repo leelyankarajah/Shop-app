@@ -1,118 +1,200 @@
 // lib/screens/auth/views/offers_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:shop/constants.dart';
-import 'package:shop/components/skleton/others/offers_skelton.dart';
+import 'package:shop/models/product_model.dart';
+import 'package:shop/providers/owner_provider.dart';
 
 class OffersScreen extends StatelessWidget {
   const OffersScreen({super.key});
 
+  bool _isProductOnOffer(ProductModel p) {
+    final hasPercent =
+        p.dicountpercent != null && p.dicountpercent! > 0;
+    final hasDiscountPrice =
+        p.priceAfetDiscount != null &&
+            p.priceAfetDiscount! > 0 &&
+            p.priceAfetDiscount! < p.price;
+    return hasPercent || hasDiscountPrice;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final owner = context.watch<OwnerProvider>();
     final theme = Theme.of(context);
 
-    final List<_Offer> offers = [
-      _Offer(
-        title: "Weekend sale",
-        description: "Up to 30% off on dairy products.",
-        tag: "Top deal",
-      ),
-      _Offer(
-        title: "Buy 2 get 1 free",
-        description: "Snacks & drinks selected items.",
-        tag: "Limited time",
-      ),
-      _Offer(
-        title: "Free delivery",
-        description: "For orders above ₪150.",
-        tag: "Today only",
-      ),
-    ];
+    final List<ProductModel> offers = owner.products
+        .where(_isProductOnOffer)
+        .toList();
 
     return Scaffold(
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text('Offers'),
-        centerTitle: true,
+        backgroundColor: whiteColor,
+        elevation: 0,
+        title: const Text(
+          'Offers',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
       body: offers.isEmpty
-          ? const Padding(
-              padding: EdgeInsets.all(defaultPadding),
-              child: OffersSkelton(),
+          ? Center(
+              child: Text(
+                'No active offers right now.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: blackColor60,
+                ),
+              ),
             )
-          : ListView.builder(
+          : ListView.separated(
               padding: const EdgeInsets.all(defaultPadding),
               itemCount: offers.length,
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: defaultPadding / 1.5),
               itemBuilder: (context, index) {
-                final o = offers[index];
+                final p = offers[index];
+
+                final double oldPrice = p.price;
+                final double currentPrice =
+                    p.priceAfetDiscount != null &&
+                            p.priceAfetDiscount! > 0 &&
+                            p.priceAfetDiscount! < p.price
+                        ? p.priceAfetDiscount!
+                        : p.price;
+                final int discountPercent = p.dicountpercent ??
+                    (((1 - (currentPrice / oldPrice)) * 100)
+                            .round())
+                        .clamp(0, 90);
+
                 return Container(
-                  margin:
-                      const EdgeInsets.only(bottom: defaultPadding * 0.75),
-                  padding: const EdgeInsets.all(defaultPadding),
                   decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(
                       defaultBorderRadious * 1.4,
                     ),
-                    gradient: LinearGradient(
-                      colors: [
-                        primaryColor.withOpacity(0.06),
-                        primaryColor.withOpacity(0.12),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              o.tag.toUpperCase(),
-                              style: theme.textTheme.labelSmall
-                                  ?.copyWith(
-                                color: primaryColor,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              o.title,
-                              style: theme.textTheme.titleMedium
-                                  ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              o.description,
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(
-                                color: blackColor60,
-                              ),
-                            ),
-                          ],
+                      // Image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          defaultBorderRadious * 1.4,
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      OutlinedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Offer "${o.title}" applied (demo only)',
-                              ),
-                              behavior: SnackBarBehavior.floating,
+                        child: Image.network(
+                          p.image,
+                          height: 90,
+                          width: 90,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            height: 90,
+                            width: 90,
+                            color: blackColor5,
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.image_outlined,
+                              color: blackColor40,
                             ),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: primaryColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
                           ),
                         ),
-                        child: const Text('Use'),
+                      ),
+                      const SizedBox(width: defaultPadding),
+
+                      // Text content
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: defaultPadding / 1.4,
+                          ),
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                p.brandName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: blackColor60,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Text(
+                                    '₪${currentPrice.toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '₪${oldPrice.toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: blackColor40,
+                                      decoration: TextDecoration
+                                          .lineThrough,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF1F1),
+                                      borderRadius:
+                                          BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '-$discountPercent%',
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFFFF4D4D),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                p.stock > 0
+                                    ? 'In stock: ${p.stock}'
+                                    : 'Out of stock',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: p.stock > 0
+                                      ? Colors.green
+                                      : Colors.redAccent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -121,16 +203,4 @@ class OffersScreen extends StatelessWidget {
             ),
     );
   }
-}
-
-class _Offer {
-  final String title;
-  final String description;
-  final String tag;
-
-  _Offer({
-    required this.title,
-    required this.description,
-    required this.tag,
-  });
 }
